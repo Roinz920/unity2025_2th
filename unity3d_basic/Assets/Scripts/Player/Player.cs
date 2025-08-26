@@ -10,6 +10,25 @@ using UnityEngine;
 
 
 public class Player : Battle
-{   
+{
+    // 충돌 체크를 위한 코드
+    [SerializeField] AttackChecker attackChecker;
 
+    private void Start()
+    {
+        attackChecker = GetComponentInChildren<AttackChecker>();
+    }
+
+    // 
+
+    public override void Attack(Battle other)
+    {
+
+    }
+
+    public override void Attack()
+    {
+        base.Attack();
+        attackChecker.gameObject.SetActive(true);
+    }
 }

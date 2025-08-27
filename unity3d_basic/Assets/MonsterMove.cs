@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MonsterMove : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 2f;        // 이동 속도
+    [SerializeField] public float moveSpeed = 2f;        // 이동 속도
     [SerializeField] private float changeTargetDelay = 0.5f; // 새 목표 위치로 다시 고르는 최소 딜레이
     [SerializeField] private Vector2 moveRange = new Vector2(8f, 4f); // 이동 가능한 월드 범위 (x, y)
 

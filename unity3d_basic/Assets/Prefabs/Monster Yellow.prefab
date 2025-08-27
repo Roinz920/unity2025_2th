@@ -20,6 +20,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3320350060287803884, guid: e2c60da7e79cb3647b8dee9d5b265446, type: 3}
+      propertyPath: moveSpeed
+      value: 1.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4488884809024758809, guid: e2c60da7e79cb3647b8dee9d5b265446, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -62,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8183234766466862916, guid: e2c60da7e79cb3647b8dee9d5b265446, type: 3}
       propertyPath: m_Name
-      value: Monster Variant
+      value: Monster Yellow
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

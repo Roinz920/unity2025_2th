@@ -9,9 +9,11 @@ namespace Example {
         [Header("몬스터 생성 정보")]
         [SerializeField] Transform[] spawnPositions; // cs에서 배열을 표현하는 방식
         [SerializeField] GameObject[] spawnMonsters;
+        [SerializeField] MonsterInfo[] monsterInfos;
         [SerializeField] int spawnAmount = 5;
         [SerializeField] float spawnIntervalTime = 0.5f;
         private Coroutine spawnCoroutine;
+        private Monster monster = new();
 
         // Start is called before the first frame update
         void Start()
@@ -25,8 +27,22 @@ namespace Example {
             {
                 Spawn();
             }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                monster = ConstructMonster();
+                monster.MonsterConstructor();
+            }
         }
 
+        // monster의 데이터를 생성해주는 함수
+        public Monster ConstructMonster()
+        {
+            Monster newMonster = new();
+            int random = UnityEngine.Random.Range(0, monsterInfos.Length);
+            newMonster.monsterInfo = monsterInfos[random]; // monsterInfos 배열중의 하나를 선택하라.
+            return newMonster;
+        }
         /// <summary>
         /// 게임 월드에 특정 위치에 몬스터를 생성하는데, 몇 마리를 생성할까
         /// 한번에 몬스터가 등장할 것인가, 시간에 걸쳐서 서서히 생성할 것인가

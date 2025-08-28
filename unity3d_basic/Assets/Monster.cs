@@ -24,7 +24,7 @@ namespace Example
         }
 
         [ContextMenu("몬스터 생성")]
-        private void MonsterConstructor()
+        public void MonsterConstructor()
         {
             GameObject instance = new GameObject();
             instance.transform.localScale = Vector3.one * monsterInfo.size;

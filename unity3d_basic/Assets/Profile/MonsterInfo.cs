@@ -9,6 +9,8 @@ namespace Example
     public class MonsterInfo : ScriptableObject
     {
         public float moveSpeed = 1f;
+        public float minMoveRange = 0.5f;
+        public float maxMoveRange;
         public Sprite monsterSprite;
         public float size = 1.0f;
         public string monsterName;

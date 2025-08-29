@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
+using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -13,6 +15,11 @@ public class NPC : MonoBehaviour
     SpriteRenderer spriteRenderer;
     Rigidbody2D rigidbody2D;
     BoxCollider2D boxCollider2D;
+
+    
+    [SerializeField] private Vector2 currentTargetPos;
+    [SerializeField] private bool IsMoving =true;   // 목적지 도착 후, 한번만 위치를 재설정하기 위함
+    Transform playerPos;
 
     private void Awake()
     {
@@ -28,37 +35,87 @@ public class NPC : MonoBehaviour
     }
     private void Start()
     {
-        Patrol();
+        SetRandomPosition();
     }
 
     private void Update()
     {
-        Patrol();
+        if (IsPatrol()) { Patrol(); }       
+
+        
     }
     public void Patrol()
     {
         // 이동해라
-        MoveTargetPoint(1);
-        // 일정 시간 대기한다
-        //WaitTime(3);
+        MoveTargetPoint();
     }
 
-    private void MoveTargetPoint(float WaitTime)
+    public void Chase()
+    {
+        playerPos = GameObject.FindGameObjectWithTag("Player").transform;
+        SetPosition(playerPos.position);
+        MoveTargetPoint();
+    }
+
+    // 현재 상태를 체크해주는 함수
+    bool IsPatrol()
+    {
+        playerPos = GameObject.FindGameObjectWithTag("Player").transform;
+        if (Vector2.Distance(transform.position, playerPos.position) < NPC_Info.patrolDistance)
+            return false;
+        else return true;
+    }
+
+    private void MoveTargetPoint()
     {
         float moveSpeed = Random.Range((float)NPC_Info.MinSpeed, (float)NPC_Info.MaxSpeed);
 
-        Vector2 randomPosition = Random.insideUnitCircle * NPC_Info.PatrolRadius;
+        // SetRandomPosition();
 
-        Debug.Log(randomPosition);
+        Debug.Log(currentTargetPos);
 
-        transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position+randomPosition, moveSpeed * Time.deltaTime);
-        if (Vector2.Distance(transform.position, randomPosition) < 0.1f)
+        transform.position = Vector2.MoveTowards(transform.position, currentTargetPos, moveSpeed * Time.deltaTime);
+
+
+        if (Vector2.Distance(transform.position, currentTargetPos) < NPC_Info.stopDistance)
         {
-            Invoke(nameof(Patrol), WaitTime * Time.deltaTime);
+            if (IsMoving)
+            {
+            IsMoving = false;
+            Invoke(nameof(SetRandomPosition), 1.0f);
+            }
         }
     }
-    public void WaitTime(float time)
+
+    public void SetRandomPosition()
     {
-        
+        // 위치의 랜던값 표현
+        currentTargetPos = (Vector2)transform.position + Random.insideUnitCircle * NPC_Info.PatrolRadius;
+        IsMoving = true;
+    }
+
+    public void SetPosition(Vector3 pos)
+    {
+
+    }
+    private IEnumerator SetRandomPositionCoroutine()
+    {        
+        SetRandomPosition();
+        yield return new WaitForSeconds(1f);        
+    }
+
+    // Gizmo를 그리는 특수한 함수
+    private void OnDrawGizmos()
+    {
+        //DrawChaseCircle();
+    }
+    private void OnDrawGizmosSelected()
+    {
+        DrawChaseCircle();
+    }
+    private void DrawChaseCircle()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, NPC_Info.patrolDistance);
     }
 }

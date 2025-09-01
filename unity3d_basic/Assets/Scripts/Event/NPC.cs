@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class NPC : MonoBehaviour
@@ -40,8 +41,8 @@ public class NPC : MonoBehaviour
 
     private void Update()
     {
-        if (IsPatrol()) { Patrol(); }       
-
+        if (IsPatrol()) { Patrol(); }
+        else { Chase(); }
         
     }
     public void Patrol()
@@ -52,7 +53,7 @@ public class NPC : MonoBehaviour
 
     public void Chase()
     {
-        playerPos = GameObject.FindGameObjectWithTag("Player").transform;
+        //playerPos = GameObject.FindGameObjectWithTag("Player").transform;
         SetPosition(playerPos.position);
         MoveTargetPoint();
     }
@@ -74,16 +75,25 @@ public class NPC : MonoBehaviour
 
         Debug.Log(currentTargetPos);
 
-        transform.position = Vector2.MoveTowards(transform.position, currentTargetPos, moveSpeed * Time.deltaTime);
+        
 
 
         if (Vector2.Distance(transform.position, currentTargetPos) < NPC_Info.stopDistance)
         {
-            if (IsMoving)
-            {
-            IsMoving = false;
-            Invoke(nameof(SetRandomPosition), 1.0f);
-            }
+            rigidbody2D.velocity = Vector2.zero;
+            IsMoving = true;
+
+            //if (IsMoving)
+            //{
+            //IsMoving = false;
+            //Invoke(nameof(SetRandomPosition), 1.0f);
+            //}
+
+            if(IsPatrol()) { SetRandomPosition(); }
+        }
+        else
+        {
+            transform.position = Vector2.MoveTowards(transform.position, currentTargetPos, moveSpeed * Time.deltaTime);
         }
     }
 
@@ -91,12 +101,12 @@ public class NPC : MonoBehaviour
     {
         // 위치의 랜던값 표현
         currentTargetPos = (Vector2)transform.position + Random.insideUnitCircle * NPC_Info.PatrolRadius;
-        IsMoving = true;
+        IsMoving = false;
     }
 
-    public void SetPosition(Vector3 pos)
+    public void SetPosition(Vector2 pos)
     {
-
+        currentTargetPos = pos;
     }
     private IEnumerator SetRandomPositionCoroutine()
     {        
@@ -107,11 +117,11 @@ public class NPC : MonoBehaviour
     // Gizmo를 그리는 특수한 함수
     private void OnDrawGizmos()
     {
-        //DrawChaseCircle();
+        DrawChaseCircle();
     }
     private void OnDrawGizmosSelected()
     {
-        DrawChaseCircle();
+        //DrawChaseCircle();
     }
     private void DrawChaseCircle()
     {

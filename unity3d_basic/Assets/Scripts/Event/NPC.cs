@@ -9,9 +9,15 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
+public enum CollisionEvent
+{
+    Friendly, Aggressivly, UnDefined
+}
+
 public class NPC : MonoBehaviour
 {
     [SerializeField] private NPCInfo NPC_Info;
+    [SerializeField] CollisionEvent collisionEvent = CollisionEvent.UnDefined;
 
     SpriteRenderer spriteRenderer;
     Rigidbody2D rigidbody2D;
@@ -73,7 +79,7 @@ public class NPC : MonoBehaviour
 
         // SetRandomPosition();
 
-        Debug.Log(currentTargetPos);
+        // Debug.Log(currentTargetPos);
 
         
 
@@ -127,5 +133,29 @@ public class NPC : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, NPC_Info.patrolDistance);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            // NPC가 플레이어와 충돌했을 때의 이벤트 발생
+            if(collisionEvent == CollisionEvent.Friendly)
+            {
+                Bus<IColWithPlayerEvent>.Raise(new IColWithPlayerEvent());
+                gameObject.SetActive(false);
+                //Bus<IFriendlyCollsionEvent>.Raise();
+            }
+            else if (collisionEvent == CollisionEvent.Aggressivly)
+            {
+                
+                //Bus<IAggressivlyCollisionEvent>.Raise();
+            }
+            else
+            {
+                Debug.LogWarning("정의되지 않은 이벤트 발생");
+            }
+
+        }
     }
 }

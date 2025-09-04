@@ -11,34 +11,43 @@ public class CoinSpawner : MonoBehaviour
     [SerializeField] private int coinMaxAmount = 10;
     [SerializeField] private float coinSpawnDelay = 0.5f;
 
-    private int currentCoinCount = 0;
-    private bool maxCoinState = false;
+    [SerializeField] private bool maxCoinState = false;
+
+    [SerializeField] private int spawnCoinCount = 0;
+    [SerializeField] List<Coin> spawnedList = new();
+    [SerializeField] public int spawnedCount { get; set; }
+
     private void OnEnable()
     {
         Bus<IGetCoinEvent>.OnEvent += HandleGetCoin;
+        Bus<ICoinSpawnEvent>.OnEvent += HandleSpawnCoin;
     }
 
     private void OnDisable()
     {
         Bus<IGetCoinEvent>.OnEvent -= HandleGetCoin;
+        Bus<ICoinSpawnEvent>.OnEvent += HandleSpawnCoin;
+    }
+
+    private void HandleSpawnCoin(ICoinSpawnEvent evt)
+    {
+        spawnedList.Add(evt.Coin);
+        spawnedCount++;
     }
 
     private void HandleGetCoin(IGetCoinEvent evt)
     {
-
         if (maxCoinState) { return; }
-
+        spawnedList.Remove(evt.Coin);
+        spawnedCount--;
         StartCoroutine(SpawnCoinRoutine());
-
-         
-
     }
 
     private IEnumerator SpawnCoinRoutine()
     {
         for (int i = 0; i < coinAmount; i++)
         {
-            if (currentCoinCount >= coinMaxAmount)
+            if (spawnCoinCount >= coinMaxAmount)
             {
                 maxCoinState = true;
                 yield break; // 코루틴 종료
@@ -48,7 +57,7 @@ public class CoinSpawner : MonoBehaviour
             Vector2 randomSpawnPos = UnityEngine.Random.insideUnitCircle * 10;
             Instantiate(CoinPrefab, transform.position + (Vector3)randomSpawnPos, Quaternion.identity);
 
-            currentCoinCount++;
+            spawnCoinCount++;
 
             yield return new WaitForSeconds(coinSpawnDelay);
         }

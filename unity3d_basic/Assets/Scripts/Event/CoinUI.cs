@@ -22,7 +22,10 @@ public class CoinUI : MonoBehaviour
 
     private void HandleGetCoin(IGetCoinEvent evt)
     {
-        currentCoin += evt.Value;
+        if (evt.Coin == null) { currentCoin += 0; Debug.LogWarning("Coin의 정보 없음", this); }
+        else { currentCoin += evt.Coin.coinValue; }
+
+            
         coinText.SetText($"Current Coin : {currentCoin}");
     }   
 
@@ -30,7 +33,7 @@ public class CoinUI : MonoBehaviour
     {
         currentCoin = 0; // 플레이어의 동전 정보로부터 값을 가져와서 적용
         coinText = GetComponent<TextMeshProUGUI>();
-        Bus<IGetCoinEvent>.Raise(new IGetCoinEvent(currentCoin));
+        Bus<IGetCoinEvent>.Raise(new IGetCoinEvent());
     }
 
 }

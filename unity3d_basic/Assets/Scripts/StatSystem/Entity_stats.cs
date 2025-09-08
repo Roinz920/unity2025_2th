@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
@@ -21,13 +22,28 @@ public class Entity_stats : MonoBehaviour
     {
         StatData = (Entity_statsData)_statData.Clone();
         StatData.Vitality.AddModifier(5, "Item"); // 아이템으로 인해 체력스탯이 5가 상승했다.
+        StatData.Vitality.RemoveModifier("Item"); // Item 경로로부터 얻은 스캣을 제거하라.
     }
-
-    private void Update()
+    public Stat GetStatbyType(StatType type)
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        switch (type)
         {
-            StatData.Vitality.RemoveModifier("Item");
+            case StatType.Strength: return StatData.Strength;
+            case StatType.Dexterity: return StatData.Dexterity;
+            case StatType.Intelligence: return StatData.Intelligence;
+            case StatType.Vitality: return StatData.Vitality;
+            case StatType.UnDefined: { Debug.Log("정의되지 않은 스탯 타입을 반환하려 했습니다."); return null; }
+            default: return null;                
         }
+
+        /*
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                StatData.Vitality.RemoveModifier("Item");
+            }
+        }
+        */
     }
 }
